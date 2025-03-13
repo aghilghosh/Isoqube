@@ -11,7 +11,7 @@ Built on top of MassTransit, Isoqube leverages a developer-focused platform for 
 - Flexible and reusable to meet diverse business needs.
 
 ## Solution Overview
-This repository contains a .NET 8 solution simulating a build server. It includes a configurator application (Angular) that allows users to create and run build configurations. The consumer logic is simulated, providing a framework to implement custom logic and application flows.
+This repository contains a .NET 8 solution simulating a build server. It includes a configurator application (Isoqube.Controlcenter) that allows users to create and run build configurations. The consumer logic is simulated, providing a framework to implement custom logic and application flows.
 
 ## How It Works
 1. **Bootstrap Process:** Isoqube registers all consumers to handle events.
