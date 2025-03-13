@@ -1,0 +1,128 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Configuration</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <button type="button" (click)="getConfigurations()" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i></button>
+      <button type="button" (click)="addNewConfiguration()" class="btn btn-sm btn-outline-secondary">New configuration</button>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+      <span data-feather="calendar"></span>
+      This week
+    </button>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <table class="table table-striped table-hover text-start table-responsive">
+        <thead>
+          <ng-template #filterLoading>
+            <tr>
+              <td colspan="7">
+                <div class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td colspan="2"></td>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <ng-container *ngIf="(configurations$ | async) as configurations; else organizationsLoading">
+            <tr *ngFor="let configuration of configurations">
+              <td>{{ configuration.name }}</td>
+              <td>{{ configuration.description }}</td>
+              <td colspan="2">
+                <div class="btn-group btn-group-sm d-grid d-md-flex justify-content-sm-end" role="group"
+                  aria-label="First group">
+                  <button (click)="modifyConfiguration(configuration)" title="Modify configuration" class="btn btn-sm btn-outline-secondary cursor-pointer"><i
+                      class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary cursor-pointer" title="Use configuration">
+                    <i class="bi bi-arrow-up-right-square-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <ng-container *ngIf="configurations?.length === 0">
+              <tr>
+                <td colspan="7">
+                  <div class="alert alert-secondary bg-gradient mt-3">
+                    No data available for the current filter
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+          <ng-template #organizationsLoading>
+            <tr>
+              <td colspan="7">
+                <div class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #addConfiguration>
+  <ng-container *ngIf="context.configuration">
+    <div class="modal-header">
+      <h5 class="modal-title">Add new configuration</h5>
+      <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-2">
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" id="configName" [(ngModel)]="this.context.configuration.name" class="form-control">
+            <label for="configName">Name</label>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" id="configDecsription" [(ngModel)]="this.context.configuration.description" class="form-control">
+            <label for="configDecsription">Configuration description</label>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 row">
+        <div class="input-group">
+          <div class="form-floating">
+            <select [(ngModel)]="context.selectedTopic" class="form-select" id="floatingSelect"
+              aria-label="Floating label select example">
+              <option [ngValue]="topic" *ngFor="let topic of topics" selected>{{topic.description | titlecase}}</option>
+            </select>
+            <label for="floatingSelect">Choose topic</label>
+          </div>
+          <button (click)="onAddTopic()" type="button" class="btn btn-outline-secondary">Add</button>
+        </div>
+      </div>
+      <div class="mt-3 row">
+        <label for="staticEmail" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <ul class="list-group">
+            <li *ngFor="let topic of context.configuration.topics" class="list-group-item">{{topic.description}}
+              <button type="button" class="btn-close justify-content-end" (click)="removeTopic(topic)"
+                aria-label="Close"></button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="onModifyConfiguration()" title="Modify configuration">{{context.configuration.id ? 'Modify' : 'Create'}}</button>
+    </div>
+  </ng-container>
+</ng-template>

@@ -1,0 +1,18 @@
+﻿DEVOPS
+-------
+	Username: Isoqube
+	PAT: ssn7a6f7fc24feenfwds7qzfbxko6kylgm7qvo7vaoo54nbcbryq
+
+	Adding source (first time)
+	--------------------------
+	dotnet nuget add source https://pkgs.dev.azure.com/Isoqube/_packaging/Isoqube/nuget/v3/index.json --name Isoqube --username Isoqube --password ssn7a6f7fc24feenfwds7qzfbxko6kylgm7qvo7vaoo54nbcbryq --configfile ./nuget.config
+	dotnet nuget add source https://pkgs.dev.azure.com/Isoqube/_packaging/boardroom/nuget/v3/index.json --name Isoqube --username Isoqube --password ssn7a6f7fc24feenfwds7qzfbxko6kylgm7qvo7vaoo54nbcbryq --configfile ./nuget.config
+
+	Push/Publish (for every new version)
+	------------------------------------
+	dotnet nuget push .\bin\Release\Isoqube.Core.Libraries.Shared.1.0.1.nupkg --source Boardroom --api-key AZ
+	dotnet nuget push .\bin\Release\Isoqube.Core.Libraries.Shared.1.0.1.nupkg --source Boardroom --api-key AZ --skip-duplicate
+
+	dotnet nuget push .\bin\Release\Isoqube.Orchestration.Core.1.0.0.nupkg --source Boardroom --api-key AZ
+
+	dotnet nuget push --source "Isoqube" --api-key az .\bin\Release\Isoqube.Orchestration.Core.1.0.0.nupkg

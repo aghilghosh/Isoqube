@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Isoqube.Services.WindowsPool": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

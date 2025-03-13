@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Isoqube.Services.Default": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

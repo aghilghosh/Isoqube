@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Isoqube.Endpoint": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

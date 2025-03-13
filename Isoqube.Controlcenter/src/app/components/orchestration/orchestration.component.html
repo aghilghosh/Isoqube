@@ -1,0 +1,99 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Runs</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="getAllRuns()"><i
+          class="bi bi-arrow-clockwise"></i></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onCreateNewRun()">New run</button>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div>
+    <ng-container *ngIf="(runs$ | async) as runs; else LoadingRuns">
+      <div class="accordion accordion-flush" style="width: 100% !important;" id="accordionFlushExample">
+        <ng-container *ngFor="let run of runs">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button [attr.data-bs-target]="'#'+run.id" class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" aria-expanded="false" aria-controls="flush-collapseOne">
+                {{ run.description }} <span class="text-muted ms-2">{{run.createdOn | datefromnow }}</span>
+              </button>
+            </h2>
+            <div [attr.id]="run.id" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                <ol class="list-group list-group-numbered">
+                  <li *ngFor="let topic of run.topics"
+                    class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="me-auto">
+                      <div class="fw-bold">{{topic.description}}</div>
+                      {{topic.name}}
+                    </div>
+                    <span class="badge text-bg-primary rounded-pill">14</span>
+                  </li>
+                </ol>
+                <div class="card mt-2">
+                  <div class="card-body">
+                    <a class="btn btn-link" (click)="reRunConfiguration(run)">Re-run</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <ng-container *ngIf="runs?.length === 0">
+        <tr>
+          <td colspan="7">
+            <div class="alert alert-secondary bg-gradient mt-3">
+              No data available for the current filter
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+    <ng-template #LoadingRuns>
+      <div class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<ng-template #runConfiguration>
+  <ng-container *ngIf="context.runConfiguration">
+    <div class="modal-header">
+      <h5 class="modal-title">Run new configuration</h5>
+      <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-2">
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" id="configDecsription" [(ngModel)]="this.context.description" class="form-control">
+            <label for="configDecsription">Description</label>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 row">
+        <div class="input-group">
+          <div class="form-floating" *ngIf="(configurations$ | async) as configurations">
+            <select [(ngModel)]="context.runConfiguration" class="form-select" id="floatingSelect"
+              aria-label="Floating label select example">
+              <option [ngValue]="topic" *ngFor="let topic of configurations" selected>{{topic.description | titlecase}}
+              </option>
+            </select>
+            <label for="floatingSelect">Choose configuration</label>
+          </div>
+          <button (click)="onRunConfigurationc()" type="button" class="btn btn-outline-secondary">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="onRunConfigurationc()"
+        title="Modify configuration">{{context.runConfiguration.id ? 'Modify' : 'Create'}}</button>
+    </div>
+  </ng-container>
+</ng-template>
