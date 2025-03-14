@@ -226,16 +226,16 @@ namespace Isoqube.Orchestration.Core
                 Type attributeType = typeof(TopicName);
                 var topics = registeredTopics.Select(type => new
                     {
-                        ClassName = type.Name,
-                        AttributeDescription = ((TopicName)Attribute.GetCustomAttribute(type, attributeType))?.Description ?? type.Name
-                    });
+                        ClassName = type.Name?.Trim(),
+                        AttributeDescription = ((TopicName)Attribute.GetCustomAttribute(type, attributeType))?.Description?.Trim() ?? type.Name?.Trim()
+                });
 
                 await SaveToCollections(topicCollection, topics.Select(topic => new RegisteredTopic
                 {
                     CreatedOn = PlatformDateTime.Datetime,
-                    Description = topic.AttributeDescription,
-                    Type = topic.ClassName.Split('`')[0],
-                    Name = topic.ClassName.Split('`')[0],
+                    Description = topic.AttributeDescription?.Trim(),
+                    Type = topic.ClassName?.Split('`')[0]?.Trim(),
+                    Name = topic.ClassName?.Split('`')[0]?.Trim(),
                     Version = Environment.GetEnvironmentVariable("VERSION") ?? "1.0.0"
                 }));
             }

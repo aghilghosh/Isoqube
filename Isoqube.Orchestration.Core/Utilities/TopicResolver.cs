@@ -91,7 +91,7 @@ namespace Isoqube.Orchestration.Core.Utilities
 
                 await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
 
-                var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn == null);
+                var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn is null);
                 if (nextTopic == null) return;
 
                 var configuredTopic = Resolve(nextTopic.Name, context.Message);

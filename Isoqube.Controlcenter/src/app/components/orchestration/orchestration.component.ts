@@ -37,11 +37,8 @@ export class OrchestrationComponent implements OnInit {
   ngAfterViewInit() { }
 
   reRunConfiguration(run: any) {
-    this.context = { id: run.id, runConfiguration: run };
-    this.orchestrationService.runConfiguration(this.context).subscribe(() => {
-      this.getAllRuns();
-      this.bsModalRef.hide();
-    });
+    this.context = { description: run.description, runConfiguration: run };
+    this.bsModalRef = this.modalService.show(this.runConfiguration, Object.assign({}, this.MD_MODAL_DIALOG_STYLE));
   }
 
   onCreateNewRun() {
