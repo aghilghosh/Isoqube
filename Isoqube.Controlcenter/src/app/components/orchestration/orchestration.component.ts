@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OrchestrationService } from '../../services/orchestration.service';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { Configuration, TopicNotification } from '../../models/http';
+import { Configuration } from '../../models/http';
 import { SignalRService } from '../../services/signarR.service';
 
 @Component({
@@ -13,23 +13,23 @@ import { SignalRService } from '../../services/signarR.service';
 export class OrchestrationComponent implements OnInit {
 
   configurations$: Observable<any[]> | undefined;
-  runs$: Observable<any[]> | undefined;
+  runs: any[] = [];
   bsModalRef!: BsModalRef;
   MD_MODAL_DIALOG_STYLE: ModalOptions = { class: 'modal-lg', backdrop: 'static' };
   @ViewChild('runConfiguration') runConfiguration!: TemplateRef<any>;
-  topicNotification : TopicNotification[] = [];
 
   context: { id?: string, description?: any, runConfiguration: Configuration } = { id: '', description: null, runConfiguration: { description: '', id: '', name: '', topics: [] } };
 
   constructor(private orchestrationService: OrchestrationService, private modalService: BsModalService, private signalRService: SignalRService) { }
 
   ngOnInit() {
-    
+
     this.getAllRuns();
     this.getConfigurations();
     this.signalRService.getMessages().subscribe((message) => {
-      console.log(message); 
-      this.topicNotification.push(message);
+      console.log(message);
+      let currentRun = this.runs.find((run) => run.id === message.run.id);
+      currentRun.topics = message.run.topics;
     });
   }
 
@@ -38,7 +38,9 @@ export class OrchestrationComponent implements OnInit {
   }
 
   getAllRuns() {
-    this.runs$ = this.orchestrationService.getAllruns();
+    this.orchestrationService.getAllruns().subscribe((runs) => {
+      this.runs = runs;
+    });
   }
 
   ngAfterViewInit() { }
