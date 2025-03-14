@@ -19,6 +19,6 @@ namespace Isoqube.Orchestration.Core.Data.Entities
         public DateTime? CancelledOn { get; set; }
         public DateTime? RetriedOn { get; set; }
         public DateTime? SucceededOn { get; set; }
-        public DateTime? TriggeredOn { get; set; }
+        public DateTime? InvokedOn { get; set; }
     }
 }

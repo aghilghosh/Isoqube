@@ -1,8 +1,8 @@
-﻿using MassTransit;
-using Isoqube.Orchestration.Core.ServiceBus;
+﻿using Isoqube.Orchestration.Core.ServiceBus;
 using Isoqube.Orchestration.Core.ServiceBus.Attributes;
 using Isoqube.Orchestration.Core.ServiceBus.Topics;
 using Isoqube.Orchestration.Core.Utilities;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
@@ -13,6 +13,7 @@ namespace Isoqube.Services.WindowsPool.Consumers
     {
         public async Task Consume(ConsumeContext<Windows2019Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"Windows2019Build consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -26,6 +27,7 @@ namespace Isoqube.Services.WindowsPool.Consumers
     {
         public async Task Consume(ConsumeContext<Windows2022Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"Windows2022Build consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -39,6 +41,7 @@ namespace Isoqube.Services.WindowsPool.Consumers
     {
         public async Task Consume(ConsumeContext<Windows2025Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"Windows2025Build Consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 

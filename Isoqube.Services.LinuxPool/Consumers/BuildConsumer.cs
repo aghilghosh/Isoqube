@@ -1,8 +1,8 @@
-﻿using MassTransit;
-using Isoqube.Orchestration.Core.ServiceBus;
+﻿using Isoqube.Orchestration.Core.ServiceBus;
 using Isoqube.Orchestration.Core.ServiceBus.Attributes;
 using Isoqube.Orchestration.Core.ServiceBus.Topics;
 using Isoqube.Orchestration.Core.Utilities;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
@@ -13,6 +13,7 @@ namespace Isoqube.Services.LinuxPool.Consumers
     {
         public async Task Consume(ConsumeContext<LinuxUbundu2004Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"LinuxUbundu2004Build consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -26,6 +27,7 @@ namespace Isoqube.Services.LinuxPool.Consumers
     {
         public async Task Consume(ConsumeContext<LinuxUbundu2204Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"LinuxUbundu2204BuildConsumer consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -39,6 +41,7 @@ namespace Isoqube.Services.LinuxPool.Consumers
     {
         public async Task Consume(ConsumeContext<LinuxUbundu2404Build> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             logger.LogInformation($"LinuxUbundu2404Build Consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 

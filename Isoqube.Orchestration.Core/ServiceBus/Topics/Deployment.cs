@@ -17,7 +17,7 @@ namespace Isoqube.Orchestration.Core.ServiceBus.Topics
 
     [EntityName("deployment-completed")]
     [TopicName("DeploymentCompleted", "Deployment completed")]
-    public class Deploymentcompleted(DateTime Timestamp, string CorrelationId, string IngestionId) : TopicBase(Timestamp, CorrelationId, IngestionId)
+    public class DeploymentCompleted(DateTime Timestamp, string CorrelationId, string IngestionId) : TopicBase(Timestamp, CorrelationId, IngestionId)
     {
     }
 

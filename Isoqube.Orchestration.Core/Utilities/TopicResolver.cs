@@ -39,44 +39,67 @@ namespace Isoqube.Orchestration.Core.Utilities
             return null;
         }
 
+        public static async Task InvokeTopic(IMongoDatabase mongoDb, IServiceBus serviceBus, ConsumeContext<TopicBase> context)
+        {
+            try
+            {
+                var configuredRunCollection = mongoDb.GetCollection<RunEntity>("Run");
+                var configuredRun = await configuredRunCollection
+                    .Find(Builders<RunEntity>.Filter.Eq(e => e.Id, context.Message.CorrelationId))
+                    .FirstOrDefaultAsync();
+
+                if (configuredRun == null) return;
+
+                var currentTopic = configuredRun.Topics.FirstOrDefault(topic => topic.Name == context.Message.GetType().Name);
+                if (currentTopic == null) return;
+
+                currentTopic.InvokedOn = PlatformDateTime.Datetime;
+
+                var filter = Builders<RunEntity>.Filter.Eq(e => e.Id, configuredRun.Id);
+                var updateDefinition = Builders<RunEntity>.Update
+                    .Set(e => e.ModifiedOn, PlatformDateTime.Datetime)
+                    .Set(e => e.Topics.ElementAt(configuredRun.Topics.ToList().IndexOf(currentTopic)), currentTopic);
+
+                await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public static async Task HandleTopic(IMongoDatabase mongoDb, IServiceBus serviceBus, ConsumeContext<TopicBase> context)
         {
             try
             {
-                object configuredTopic = null;
-                var configuredRunCollection = mongoDb.GetCollection<RunEntity>("RunEntity");
-                var configuredRunAsync = await configuredRunCollection.FindAsync(Builders<RunEntity>.Filter.Eq(e => e.Id, context.Message.CorrelationId));
-                var configuredRun = (await configuredRunAsync.ToListAsync()).FirstOrDefault();
+                var configuredRunCollection = mongoDb.GetCollection<RunEntity>("Run");
+                var configuredRun = await configuredRunCollection
+                    .Find(Builders<RunEntity>.Filter.Eq(e => e.Id, context.Message.CorrelationId))
+                    .FirstOrDefaultAsync();
 
-                if (configuredRun is not null)
-                {
-                    var currentTopic = configuredRun.Topics.FirstOrDefault(topic => topic.Name == context.Message.GetType().Name);
+                if (configuredRun == null) return;
 
-                    if (currentTopic is not null)
-                    {
-                        currentTopic.CompletedOn = PlatformDateTime.Datetime;
+                var currentTopic = configuredRun.Topics.FirstOrDefault(topic => topic.Name == context.Message.GetType().Name);
+                if (currentTopic == null) return;
 
-                        var filter = Builders<RunEntity>.Filter.Eq(e => e.Id, configuredRun.Id);
+                currentTopic.CompletedOn = PlatformDateTime.Datetime;
 
-                        var updateDefinition = Builders<RunEntity>.Update
-                            .Set(e => e.ModifiedOn, PlatformDateTime.Datetime)
-                            .Set(e => e.Topics.ElementAt(configuredRun.Topics.ToList().IndexOf(currentTopic)), currentTopic);
+                var filter = Builders<RunEntity>.Filter.Eq(e => e.Id, configuredRun.Id);
+                var updateDefinition = Builders<RunEntity>.Update
+                    .Set(e => e.ModifiedOn, PlatformDateTime.Datetime)
+                    .Set(e => e.Topics.ElementAt(configuredRun.Topics.ToList().IndexOf(currentTopic)), currentTopic);
 
-                        await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
+                await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
 
-                        var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn is null);
+                var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn == null);
+                if (nextTopic == null) return;
 
-                        configuredTopic = Resolve(nextTopic.Name, context.Message);
-                        if (configuredTopic is null)
-                        {
-                            return;
-                        }
-                    }
-                }
+                var configuredTopic = Resolve(nextTopic.Name, context.Message);
+                if (configuredTopic == null) return;
 
                 await serviceBus.PublishAsync(configuredTopic);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

@@ -15,6 +15,7 @@ namespace Isoqube.Services.Default.Consumers
 
         public async Task Consume(ConsumeContext<DefaultSourceDownloadComplete> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             _logger.LogInformation($"DetermineBuildType consumer: CorrelationId: {context.Message.CorrelationId}, payload {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 

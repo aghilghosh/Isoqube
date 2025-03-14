@@ -46,7 +46,7 @@ namespace Isoqube.Endpoint
                 {
                     try
                     {
-                        var registeredTopics = await mongoDb.GetCollection<RegisteredTopic>("RegisteredTopics").FindAsync(Builders<RegisteredTopic>.Filter.Empty);
+                        var registeredTopics = await mongoDb.GetCollection<RegisteredTopic>("Topics").FindAsync(Builders<RegisteredTopic>.Filter.Empty);
                         var topicsList = await registeredTopics.ToListAsync();
                         return Results.Ok(topicsList);
                     }
@@ -62,7 +62,7 @@ namespace Isoqube.Endpoint
                     {
                         RunEntity runEntity = null;
 
-                        var configurationCollection = mongoDb.GetCollection<RunEntity>("RunEntity");
+                        var configurationCollection = mongoDb.GetCollection<RunEntity>("Run");
 
                         if (runConfiguration.Id is null)
                         {
@@ -107,7 +107,7 @@ namespace Isoqube.Endpoint
                 {
                     try
                     {
-                        var configurationCollection = await mongoDb.GetCollection<RunEntity>("RunEntity").FindAsync(Builders<RunEntity>.Filter.Empty);
+                        var configurationCollection = await mongoDb.GetCollection<RunEntity>("Run").FindAsync(Builders<RunEntity>.Filter.Empty);
                         var configurations = await configurationCollection.ToListAsync();
 
                         return Results.Ok(configurations);
@@ -122,7 +122,7 @@ namespace Isoqube.Endpoint
                 {
                     try
                     {
-                        var configurationCollection = mongoDb.GetCollection<ConfigurationEntity>("ConfigurationEntity");
+                        var configurationCollection = mongoDb.GetCollection<ConfigurationEntity>("Configurations");
 
                         if (!string.IsNullOrEmpty(configuration.Id))
                         {
@@ -156,7 +156,7 @@ namespace Isoqube.Endpoint
                 {
                     try
                     {
-                        var configurationCollection = await mongoDb.GetCollection<ConfigurationEntity>("ConfigurationEntity").FindAsync(Builders<ConfigurationEntity>.Filter.Empty);
+                        var configurationCollection = await mongoDb.GetCollection<ConfigurationEntity>("Configurations").FindAsync(Builders<ConfigurationEntity>.Filter.Empty);
                         var configurations = await configurationCollection.ToListAsync();
                         return Results.Ok(configurations);
                     }

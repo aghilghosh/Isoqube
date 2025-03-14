@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "All services",
+    "Projects": [
+      {
+        "Path": "Isoqube.Endpoint\\Isoqube.Endpoint.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Isoqube.Services.Default\\Isoqube.Services.Default.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Isoqube.Services.WindowsPool\\Isoqube.Services.WindowsPool.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Isoqube.Services.LinuxPool\\Isoqube.Services.LinuxPool.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Isoqube.Services.Deployment\\Isoqube.Services.Deployment.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

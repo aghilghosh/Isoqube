@@ -162,6 +162,11 @@ namespace Isoqube.Orchestration.Core
                         configure.UsingInMemory(
                             (context, cfg) =>
                             {
+                                cfg.UseMessageRetry(retryConfig =>
+                                {
+                                    retryConfig.Interval(3, TimeSpan.FromSeconds(5));
+                                });
+
                                 cfg.ConfigureEndpoints(context);
                             }
                         );
@@ -179,6 +184,18 @@ namespace Isoqube.Orchestration.Core
                                     host.Username(AppSettingsBase.RabbitMq?.UserName ?? string.Empty);
                                     host.Password(AppSettingsBase.RabbitMq?.Password ?? string.Empty);
                                 });
+                                cfg.UseCircuitBreaker(cb =>
+                                {
+                                    cb.TrackingPeriod = TimeSpan.FromMinutes(1);
+                                    cb.TripThreshold = 15;
+                                    cb.ActiveThreshold = 10;
+                                    cb.ResetInterval = TimeSpan.FromMinutes(5);
+                                });
+                                cfg.UseMessageRetry(retryConfig =>
+                                {
+                                    retryConfig.Interval(3, TimeSpan.FromSeconds(5));
+                                });
+
                                 cfg.ConfigureEndpoints(context);
                             }
                         );
@@ -194,7 +211,7 @@ namespace Isoqube.Orchestration.Core
         private static async void AddTopics(IServiceCollection collection)
         {
             var mongoDatabase = collection.BuildServiceProvider().GetService<IMongoDatabase>();
-            var topicCollection = mongoDatabase.GetCollection<RegisteredTopic>("RegisteredTopics");
+            var topicCollection = mongoDatabase.GetCollection<RegisteredTopic>("Topics");
 
             // Ensure the unique index on Email is created
             var indexKeys = Builders<RegisteredTopic>.IndexKeys.Ascending(topic => topic.Name);

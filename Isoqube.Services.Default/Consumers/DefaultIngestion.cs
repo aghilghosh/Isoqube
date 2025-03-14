@@ -15,6 +15,7 @@ namespace Isoqube.Services.Default.Consumers
 
         public async Task Consume(ConsumeContext<DefaultSourceIngestion> context)
         {
+            await TopicResolver.InvokeTopic(mongoDb, serviceBus, context);
             _logger.LogInformation($"DefaultIngestion consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");
             await Task.Delay(TimeSpan.FromSeconds(5));
 
