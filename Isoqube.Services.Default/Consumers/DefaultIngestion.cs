@@ -1,8 +1,12 @@
-﻿using MassTransit;
+﻿using Isoqube.Orchestration.Core.Configurations.Utilities;
 using Isoqube.Orchestration.Core.ServiceBus;
 using Isoqube.Orchestration.Core.ServiceBus.Attributes;
+using Isoqube.Orchestration.Core.ServiceBus.Models;
 using Isoqube.Orchestration.Core.ServiceBus.Topics;
+using Isoqube.Orchestration.Core.SignalR;
 using Isoqube.Orchestration.Core.Utilities;
+using MassTransit;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
@@ -20,6 +24,21 @@ namespace Isoqube.Services.Default.Consumers
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             context.AddConsumeTask(TopicResolver.HandleTopic(mongoDb, serviceBus, context));
+
+            await Task.CompletedTask;
+        }
+    }
+
+    [ConsumerName("EventNotificationConsumer")]
+    public class EventNotificationConsumer(IHubContext<NotifyClientsHub> hubContext, ILogger<EventNotificationConsumer> logger) : IConsumer<EventNotification>
+    {
+        public async Task Consume(ConsumeContext<EventNotification> context)
+        {
+            if (context is not null)
+            {
+                logger.LogInformation($"EventNotification consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");                
+                hubContext.Clients.All.SendAsync("listentonotifications", new NotifyClient { Run = context.Message.Run });
+            }
 
             await Task.CompletedTask;
         }

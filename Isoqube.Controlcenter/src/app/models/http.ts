@@ -60,3 +60,7 @@ export class DataVersion {
   version?: string;
   title?: string;
 }
+
+export class TopicNotification {
+  run?: any;
+}

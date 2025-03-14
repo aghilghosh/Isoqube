@@ -1,11 +1,8 @@
 ﻿using Isoqube.Endpoint.HostedServices;
-using Isoqube.Orchestration.Core.Configurations.Utilities;
 using Isoqube.Orchestration.Core.ServiceBus;
-using Isoqube.Orchestration.Core.ServiceBus.Models;
-using Isoqube.Orchestration.Core.ServiceBus.Topics;
 using Isoqube.Orchestration.Core.Services;
+using Isoqube.Orchestration.Core.SignalR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -16,6 +13,7 @@ namespace Isoqube.Endpoint
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSignalR();
             services.AddTransient<IServiceBus, EventPublisher>();
             services.AddHostedService<DefaultService>();
         }
@@ -29,7 +27,7 @@ namespace Isoqube.Endpoint
 
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://localhost:4999").AllowAnyMethod().AllowAnyHeader();
+                builder.WithOrigins("http://localhost:4999").AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials();
             });
 
             app.UseRouting();
@@ -37,6 +35,7 @@ namespace Isoqube.Endpoint
             {
                 endpoints.MapHealthChecks("/api/health/ready");
                 endpoints.MapHealthChecks("/api/health/live");
+                endpoints.MapHub<NotifyClientsHub>("/notifyclientshub");
             });
         }
     }

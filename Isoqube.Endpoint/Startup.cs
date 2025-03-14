@@ -8,7 +8,6 @@ using Isoqube.Orchestration.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
@@ -22,6 +21,7 @@ namespace Isoqube.Endpoint
             services.AddCors();
             services.AddTransient<IServiceBus, EventPublisher>();
             services.AddHostedService<DefaultService>();
+            services.AddSignalR();
         }
 
         public virtual void Configure(IApplicationBuilder app, HostedServiceHealthCheck hostedServiceHealthCheck)
@@ -33,7 +33,7 @@ namespace Isoqube.Endpoint
 
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://localhost:4999").AllowAnyMethod().AllowAnyHeader();
+                builder.WithOrigins("http://localhost:4999").AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials();
             });
 
             app.UseRouting();
@@ -81,7 +81,8 @@ namespace Isoqube.Endpoint
 
                             await configurationCollection.InsertOneAsync(runEntity);
                         }
-                        else {
+                        else
+                        {
 
                             var existingRunConfiguration = await configurationCollection.FindAsync(Builders<RunEntity>.Filter.Eq(e => e.Id, runConfiguration.Id));
                             runEntity = (await existingRunConfiguration.ToListAsync()).First();
@@ -92,7 +93,7 @@ namespace Isoqube.Endpoint
 
                             await configurationCollection.UpdateOneAsync(filter, update);
                         }
-                        
+
                         await servicebus.PublishAsync(new DefaultSourceIngestion(PlatformDateTime.Datetime, runEntity.Id, runEntity.Id));
 
                         return Results.Ok();

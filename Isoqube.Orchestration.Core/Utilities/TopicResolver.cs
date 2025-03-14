@@ -1,9 +1,9 @@
-﻿using MassTransit;
-using Isoqube.Orchestration.Core.Configurations.Utilities;
+﻿using Isoqube.Orchestration.Core.Configurations.Utilities;
 using Isoqube.Orchestration.Core.Data.Entities;
 using Isoqube.Orchestration.Core.ServiceBus;
 using Isoqube.Orchestration.Core.ServiceBus.Attributes;
 using Isoqube.Orchestration.Core.ServiceBus.Topics;
+using MassTransit;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Reflection;
@@ -93,6 +93,8 @@ namespace Isoqube.Orchestration.Core.Utilities
 
                 var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn is null);
                 if (nextTopic == null) return;
+
+                await serviceBus.PublishAsync(new EventNotification(configuredRun, currentTopic.CompletedOn.Value, context.Message.CorrelationId, context.Message.IngestionId));
 
                 var configuredTopic = Resolve(nextTopic.Name, context.Message);
                 if (configuredTopic == null) return;

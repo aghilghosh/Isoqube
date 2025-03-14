@@ -2,7 +2,8 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OrchestrationService } from '../../services/orchestration.service';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { Configuration } from '../../models/http';
+import { Configuration, TopicNotification } from '../../models/http';
+import { SignalRService } from '../../services/signarR.service';
 
 @Component({
   selector: 'app-orchestration',
@@ -16,14 +17,20 @@ export class OrchestrationComponent implements OnInit {
   bsModalRef!: BsModalRef;
   MD_MODAL_DIALOG_STYLE: ModalOptions = { class: 'modal-lg', backdrop: 'static' };
   @ViewChild('runConfiguration') runConfiguration!: TemplateRef<any>;
+  topicNotification : TopicNotification[] = [];
 
   context: { id?: string, description?: any, runConfiguration: Configuration } = { id: '', description: null, runConfiguration: { description: '', id: '', name: '', topics: [] } };
 
-  constructor(private orchestrationService: OrchestrationService, private modalService: BsModalService) { }
+  constructor(private orchestrationService: OrchestrationService, private modalService: BsModalService, private signalRService: SignalRService) { }
 
   ngOnInit() {
+    
     this.getAllRuns();
     this.getConfigurations();
+    this.signalRService.getMessages().subscribe((message) => {
+      console.log(message); 
+      this.topicNotification.push(message);
+    });
   }
 
   getConfigurations() {

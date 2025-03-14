@@ -13,6 +13,7 @@ import { AuthGuard } from './services/auth.service';
 import { AppRoutingModule } from './app-routing.module';
 import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
 import { DatefromNowPipe } from '../../src/app/transform/pipes/dateformatpipe';
+import { SignalRService } from './services/signarR.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,7 @@ import { DatefromNowPipe } from '../../src/app/transform/pipes/dateformatpipe';
     ModalModule.forRoot(),
     DatefromNowPipe
   ],
-  providers: [AuthGuard, BsModalService],
+  providers: [AuthGuard, BsModalService, SignalRService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
