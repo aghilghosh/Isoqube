@@ -37,7 +37,7 @@ namespace Isoqube.Services.Default.Consumers
             if (context is not null)
             {
                 logger.LogInformation($"EventNotification consumer: CorrelationId: {context.Message.CorrelationId}, Ingestion {context.Message.IngestionId} received");                
-                hubContext.Clients.All.SendAsync("listentonotifications", new NotifyClient { Run = context.Message.Run });
+                hubContext.Clients.All.SendAsync("listentonotifications", new NotifyClient { CurrentTopic = context.Message?.CurrentTopic, RunId = context.Message.IngestionId });
             }
 
             await Task.CompletedTask;

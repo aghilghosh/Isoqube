@@ -61,6 +61,9 @@ namespace Isoqube.Orchestration.Core.Utilities
                     .Set(e => e.Topics.ElementAt(configuredRun.Topics.ToList().IndexOf(currentTopic)), currentTopic);
 
                 await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
+
+                await serviceBus.PublishAsync(new EventNotification(configuredRun.Id, currentTopic, currentTopic.InvokedOn.Value, context.Message.CorrelationId, context.Message.IngestionId));
+
             }
             catch (Exception)
             {
@@ -91,11 +94,10 @@ namespace Isoqube.Orchestration.Core.Utilities
 
                 await configuredRunCollection.UpdateOneAsync(filter, updateDefinition);
 
+                await serviceBus.PublishAsync(new EventNotification(configuredRun.Id, currentTopic, currentTopic.CompletedOn.Value, context.Message.CorrelationId, context.Message.IngestionId));
+
                 var nextTopic = configuredRun.Topics.FirstOrDefault(topic => topic.CompletedOn is null);
                 if (nextTopic == null) return;
-
-                await serviceBus.PublishAsync(new EventNotification(configuredRun, currentTopic.CompletedOn.Value, context.Message.CorrelationId, context.Message.IngestionId));
-
                 var configuredTopic = Resolve(nextTopic.Name, context.Message);
                 if (configuredTopic == null) return;
 

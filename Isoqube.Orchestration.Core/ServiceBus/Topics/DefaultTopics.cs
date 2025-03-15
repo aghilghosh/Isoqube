@@ -30,8 +30,9 @@ namespace Isoqube.Orchestration.Core.ServiceBus.Topics
 
     [EntityName("event-notification")]
     [TopicName("EventNotification", "Event notifications")]
-    public class EventNotification(RunEntity run, DateTime Timestamp, string CorrelationId, string IngestionId) : TopicBase(Timestamp, CorrelationId, IngestionId)
+    public class EventNotification(string runId, TopicRun currentTopic, DateTime Timestamp, string CorrelationId, string IngestionId) : TopicBase(Timestamp, CorrelationId, IngestionId)
     {
-        public RunEntity Run { get; set; } = run;
+        public string RunId { get; set; } = runId;
+        public TopicRun CurrentTopic { get; set; } = currentTopic;
     }
 }

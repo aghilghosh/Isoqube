@@ -26,10 +26,14 @@ export class OrchestrationComponent implements OnInit {
 
     this.getAllRuns();
     this.getConfigurations();
-    this.signalRService.getMessages().subscribe((message) => {
-      console.log(message);
-      let currentRun = this.runs.find((run) => run.id === message.run.id);
-      currentRun.topics = message.run.topics;
+    this.getTopicNotifications();   
+  }
+
+  getTopicNotifications() {
+    this.signalRService.getMessages().subscribe((topicNotification) => {
+      let currentRun = this.runs.find((run) => run.id === topicNotification.runId);
+      let currentTopic = currentRun?.topics.find((topic: any) => topic.name === topicNotification.currentTopic.name);
+      Object.assign(currentTopic, topicNotification.currentTopic);
     });
   }
 

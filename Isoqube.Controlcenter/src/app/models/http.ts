@@ -62,5 +62,6 @@ export class DataVersion {
 }
 
 export class TopicNotification {
-  run?: any;
+  runId?: string;
+  currentTopic?: any;
 }

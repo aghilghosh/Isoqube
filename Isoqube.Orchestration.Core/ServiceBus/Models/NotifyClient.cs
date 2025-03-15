@@ -4,6 +4,7 @@ namespace Isoqube.Orchestration.Core.ServiceBus.Models
 {
     public class NotifyClient
     {
-        public RunEntity? Run { get; set; }
+        public string RunId { get; set; }
+        public TopicRun? CurrentTopic { get; set; }
     }
 }
