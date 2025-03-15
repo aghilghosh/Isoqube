@@ -31,8 +31,8 @@
                       {{topic.name}} 
                     </div>
                     <span *ngIf="topic.invokedOn"
-                        class="badge text-bg-secondary ms-2 me-2">{{topic?.invokedOn | datefromnow}}</span>
-                      <span *ngIf="topic.completedOn" class="badge text-bg-success">{{topic?.completedOn | datefromnow}}</span>
+                        class="badge text-bg-secondary ms-2 me-2">Invoked {{topic?.invokedOn | datefromnow}}</span>
+                      <span *ngIf="topic.completedOn" class="badge text-bg-success">Completed {{topic?.completedOn | datefromnow}}</span>
                   </li>
                 </ol>
                 <div class="card mt-2">
