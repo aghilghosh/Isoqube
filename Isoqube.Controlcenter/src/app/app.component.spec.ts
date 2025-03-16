@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Isoqube.Controlcenter'`, () => {
+  it(`should have as title 'Isoqube.Configurator'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Isoqube.Controlcenter');
+    expect(app.title).toEqual('Isoqube.Configurator');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Isoqube.Controlcenter');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Isoqube.Configurator');
   });
 });

@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   APP_ECOSYSTEM: 'Isoqube',
-  APP_NAME: 'Isoqube ControlCenter',
+  APP_NAME: 'Isoqube Configurator',
   APP_VERSION: '1.0.0.0',
   API_ENDPOINT: 'http://localhost:5000',
   API_DEFAULT_INGESTION: 'http://localhost:5001',
