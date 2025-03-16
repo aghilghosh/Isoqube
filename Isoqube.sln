@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isoqube.Services.LinuxPool"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isoqube.Services.Deployment", "Isoqube.Services.Deployment\Isoqube.Services.Deployment.csproj", "{C466FCF1-4992-4CF8-8D16-58FBF0ADACB2}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Isoqube.Controlcenter", "Isoqube.Controlcenter\Isoqube.Controlcenter.esproj", "{EBB162C8-4327-4555-8FE2-5777CCF67544}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Isoqube.Configurator", "Isoqube.Configurator\Isoqube.Configurator.esproj", "{EBB162C8-4327-4555-8FE2-5777CCF67544}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
