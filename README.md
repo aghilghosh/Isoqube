@@ -19,6 +19,8 @@ This repository contains a .NET 8 solution simulating a build server. It include
 3. **Configurator Application:** Users can view registered events, create run definitions with names and descriptions, and manage configurations from the orchestration tab.
 4. **Monitoring:** During runtime, users can observe event consumption through console logs. The RunEntity collection monitors the status of each run.
 
+https://github.com/user-attachments/assets/ffd1cb3b-1479-49de-b65d-ce118ea86622
+
 ## Running the Solution
 1. Build the solution.
 2. Run all projects using your IDE’s Run/Debug configuration.
