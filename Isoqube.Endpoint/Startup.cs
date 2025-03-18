@@ -5,6 +5,7 @@ using Isoqube.Orchestration.Core.ServiceBus;
 using Isoqube.Orchestration.Core.ServiceBus.Models;
 using Isoqube.Orchestration.Core.ServiceBus.Topics;
 using Isoqube.Orchestration.Core.Services;
+using Isoqube.Orchestration.Core.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +47,7 @@ namespace Isoqube.Endpoint
                 {
                     try
                     {
-                        var registeredTopics = await mongoDb.GetCollection<RegisteredTopic>("Topics").FindAsync(Builders<RegisteredTopic>.Filter.Empty);
-                        var topicsList = await registeredTopics.ToListAsync();
-                        return Results.Ok(topicsList);
+                        return Results.Ok(ReflectionBrocker.GetRegisteredTopics());
                     }
                     catch (Exception ex)
                     {

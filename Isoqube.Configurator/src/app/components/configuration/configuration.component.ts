@@ -60,7 +60,7 @@ export class ConfigurationComponent {
   }
 
   onAddTopic() {
-    if (this.context.selectedTopic && !this.context.configuration?.topics?.find(t => t.id === this.context.selectedTopic.id)) {
+    if (this.context.selectedTopic && !this.context.configuration?.topics?.find(t => t.name === this.context.selectedTopic.name)) {
       this.context.configuration?.topics?.push(this.context.selectedTopic);
     }
   }

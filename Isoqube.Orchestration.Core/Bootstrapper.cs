@@ -1,14 +1,10 @@
-﻿using MassTransit;
-using MassTransit.SqlTransport.Topology;
-using Isoqube.Orchestration.Core.Configurations.Models;
-using Isoqube.Orchestration.Core.Configurations.Utilities;
+﻿using Isoqube.Orchestration.Core.Configurations.Models;
 using Isoqube.Orchestration.Core.Data;
-using Isoqube.Orchestration.Core.Data.Entities;
 using Isoqube.Orchestration.Core.Extensions;
 using Isoqube.Orchestration.Core.ServiceBus;
-using Isoqube.Orchestration.Core.ServiceBus.Attributes;
 using Isoqube.Orchestration.Core.Services;
 using Isoqube.Orchestration.Core.Utilities;
+using MassTransit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -75,8 +71,7 @@ namespace Isoqube.Orchestration.Core
             EnableIsolatedLogging(collection);
 
             // Masstransit service bus settings https://medium.com/@gabrieletronchin/c-net-cloud-agnostic-service-bus-implementation-with-masstransit-b9dff03eb0f3
-            Bootstrapper<TEnvSettings, TAppSettings, TJobConfig>.AddMasstransit(collection);
-            AddTopics(collection);
+            AddConsumers(collection);
         }
 
         private static void EnableIsolatedLogging(IServiceCollection collection)
@@ -137,7 +132,7 @@ namespace Isoqube.Orchestration.Core
             }
         }
 
-        private static void AddMasstransit(IServiceCollection collection)
+        private static void AddConsumers(IServiceCollection collection)
         {
             var logger = collection.BuildServiceProvider().GetService<ILogger<Bootstrapper<TEnvSettings, TAppSettings, TJobConfig>>>();
 
@@ -145,12 +140,12 @@ namespace Isoqube.Orchestration.Core
             {
                 var registeredConsumers = ReflectionBrocker.GetConsumers();
 
-                if (registeredConsumers != null && registeredConsumers.Any()) 
+                if (registeredConsumers != null && registeredConsumers.Any())
                 {
                     foreach (var consumer in registeredConsumers)
                     {
                         configure.AddConsumer(consumer);
-                        logger?.LogInformation($"Consumer attached: {consumer.Namespace}.{consumer.Name}");
+                        logger?.LogInformation("Consumer attached: {ConsumerNamespace}.{ConsumerName}", consumer.Namespace, consumer.Name);
                     }
                 }
 
@@ -206,54 +201,6 @@ namespace Isoqube.Orchestration.Core
                         break;
                 }
             });
-        }
-
-        private static async void AddTopics(IServiceCollection collection)
-        {
-            var mongoDatabase = collection.BuildServiceProvider().GetService<IMongoDatabase>();
-            var topicCollection = mongoDatabase.GetCollection<RegisteredTopic>("Topics");
-
-            // Ensure the unique index on Email is created
-            var indexKeys = Builders<RegisteredTopic>.IndexKeys.Ascending(topic => topic.Name);
-            var indexOptions = new CreateIndexOptions { Unique = true };
-            var indexModel = new CreateIndexModel<RegisteredTopic>(indexKeys, indexOptions);
-            topicCollection.Indexes.CreateOne(indexModel);
-
-            var registeredTopics = ReflectionBrocker.GetTopics(true);
-
-            if (registeredTopics is not null)
-            {
-                Type attributeType = typeof(TopicName);
-                var topics = registeredTopics.Select(type => new
-                    {
-                        ClassName = type.Name?.Trim(),
-                        AttributeDescription = ((TopicName)Attribute.GetCustomAttribute(type, attributeType))?.Description?.Trim() ?? type.Name?.Trim()
-                });
-
-                await SaveToCollections(topicCollection, topics.Select(topic => new RegisteredTopic
-                {
-                    CreatedOn = PlatformDateTime.Datetime,
-                    Description = topic.AttributeDescription?.Trim(),
-                    Type = topic.ClassName?.Split('`')[0]?.Trim(),
-                    Name = topic.ClassName?.Split('`')[0]?.Trim(),
-                    Version = Environment.GetEnvironmentVariable("VERSION") ?? "1.0.0"
-                }));
-            }
-        }
-
-        private static async Task SaveToCollections(IMongoCollection<RegisteredTopic> topicCollection, IEnumerable< RegisteredTopic> registerTopics)
-        {
-            try
-            {
-                await topicCollection.InsertManyAsync(registerTopics);
-            }
-            catch (Exception ex)
-            {
-                if (ex is not null && ex.Message.Contains("E11000 duplicate key error collection"))
-                {
-                    return;
-                }
-            }
         }
     }
 }

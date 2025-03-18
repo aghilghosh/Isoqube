@@ -1,4 +1,6 @@
-﻿using Isoqube.Orchestration.Core.ServiceBus.Attributes;
+﻿using Isoqube.Orchestration.Core.Configurations.Utilities;
+using Isoqube.Orchestration.Core.Data.Entities;
+using Isoqube.Orchestration.Core.ServiceBus.Attributes;
 using System.Collections.Concurrent;
 using System.Reflection;
 
@@ -43,7 +45,26 @@ namespace Isoqube.Orchestration.Core.Utilities
                 return classesWithAttribute;
             }
 
-            return Enumerable.Empty<Type>();
+            return [];
+        }
+
+        public static IEnumerable<RegisteredTopic> GetRegisteredTopics()
+        {
+            Type attributeType = typeof(TopicName);
+            var topics = GetTopics(true).Select(type => new
+            {
+                ClassName = type.Name?.Trim(),
+                AttributeDescription = ((TopicName)Attribute.GetCustomAttribute(type, attributeType))?.Description?.Trim() ?? type.Name?.Trim()
+            });
+
+            return topics.Select(topic => new RegisteredTopic
+            {
+                CreatedOn = PlatformDateTime.Datetime,
+                Description = topic.AttributeDescription?.Trim(),
+                Type = topic.ClassName?.Split('`')[0]?.Trim(),
+                Name = topic.ClassName?.Split('`')[0]?.Trim(),
+                Version = Environment.GetEnvironmentVariable("VERSION") ?? "1.0.0"
+            });
         }
     }
 }
