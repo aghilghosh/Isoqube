@@ -64,19 +64,19 @@ namespace Isoqube.Orchestration.Core
 
             collection.AddTransient<IServiceBus, EventPublisher>();
 
-            // MongoDb with application logging service settings
-            AddMongoDbWithApplicationLoggingService(collection);
-
-            // Enable isolated logging services
-            EnableIsolatedLogging(collection);
-
             // Masstransit service bus settings https://medium.com/@gabrieletronchin/c-net-cloud-agnostic-service-bus-implementation-with-masstransit-b9dff03eb0f3
             AddConsumers(collection);
+
+            // MongoDb with application logging service settings
+            AddMongoDb(collection);
+
+            // Enable MongoDb logging services
+            EnableMongoDbLogging(collection);
         }
 
-        private static void EnableIsolatedLogging(IServiceCollection collection)
+        private static void EnableMongoDbLogging(IServiceCollection collection)
         {
-            if (AppSettingsBase.Logger.EnableIsolatedLogging)
+            if (AppSettingsBase.Logger != null && AppSettingsBase.Logger.EnableIsolatedLogging)
             {
                 ArgumentNullException.ThrowIfNull(nameof(AppSettingsBase.Logger.Provider));
 
@@ -102,7 +102,7 @@ namespace Isoqube.Orchestration.Core
             }
         }
 
-        private static void AddMongoDbWithApplicationLoggingService(IServiceCollection collection)
+        private static void AddMongoDb(IServiceCollection collection)
         {
             if (AppSettingsBase.Mongo is not null && !string.IsNullOrEmpty(AppSettingsBase.Mongo.ConnectionString) && !string.IsNullOrEmpty(AppSettingsBase.Mongo.DatabaseName))
             {
@@ -115,20 +115,6 @@ namespace Isoqube.Orchestration.Core
                 var mongoClient = new MongoClient(mongoDbSettings);
                 var database = mongoClient.GetDatabase(AppSettingsBase.Mongo.DatabaseName);
                 collection.AddSingleton(database);
-
-                if (!AppSettingsBase.Logger.EnableIsolatedLogging)
-                {
-                    collection.AddLogging(logging =>
-                    {
-                        logging.ClearProviders();
-                        logging.AddConsole();
-                        logging.AddMongoDbLogger(new MongoConfiguration()
-                        {
-                            logCollection = database.GetCollection<Log>(AppSettingsBase.Mongo.LogCollectionName),
-                            MinLevel = AppSettingsBase.Mongo.LogLevel.Value
-                        }, Environment.GetEnvironmentVariable("APPLICATION_NAME").ToUpper() ?? Assembly.GetCallingAssembly().GetName().Name, Environment.GetEnvironmentVariable("ENVIRONMENT"));
-                    });
-                }
             }
         }
 
